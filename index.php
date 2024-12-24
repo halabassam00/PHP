@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,25 +19,47 @@
 </html>
 
 <?php
+include("database.php");
+
+$table = " CREATE TABLE IF NOT EXISTS users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(30) NOT NULL,
+        password VARCHAR(15) NOT NULL)
+";
+mysqli_query($connect, $table);
+
+$values = "INSERT INTO users (username, password) 
+VALUES 
+('hala', '12345678'),
+('HTU', '87654321'),
+('bassam', '11223344')";
+mysqli_query($connect, $values);
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+$user = $_POST["user"];
+$password =$_POST["password"];
 
 
-if (isset($_POST["login"])){
+$check = "SELECT * FROM users
+ WHERE username='$user' and password='$password'";
+$result = mysqli_query($connect, $check);
+$counter = mysqli_num_rows($result);
+
+if ($counter > 0) {
+    echo "hello {$user}";
+} else {
     
-    if (isset($_POST["user"])&& !empty($_POST["user"])){
-        $username=filter_input(INPUT_POST,"user",FILTER_SANITIZE_SPECIAL_CHARS);
-        
-
-        if(isset($_POST["password"])&& !empty($_POST["password"])){
-        
-            echo"Hello {$username}";
-        }
-        else {
-            echo"Write your password , please.";
-        }
+    $check1 = "SELECT * FROM users 
+    WHERE username='$user'";
+    $result1 = mysqli_query($connect, $check1);
+    if (mysqli_num_rows($result1) > 0) {
+        echo "The password is incorrect.";
+    } else {
+        echo "User does not exist.";
     }
-    else {
-        echo"Write your username, please.";
-    }
-}
+}}
 
+
+
+mysqli_close($connect);
 ?>
